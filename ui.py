@@ -1,6 +1,10 @@
-from PyQt5.QtWidgets import QApplication, QWidget, QTableWidget, QTableWidgetItem, QHeaderView, QMenu, QMessageBox
+from bcode import base_code
+from base64 import b64decode
+from PIL import Image
+from io import BytesIO
+from PyQt5.QtWidgets import QApplication, QWidget, QTableWidget, QTableWidgetItem, QHeaderView, QMenu, QMessageBox, QLabel
 from PyQt5.QtCore import Qt, QUrl, QPropertyAnimation, QRect, QCoreApplication
-from PyQt5.QtGui import QDesktopServices, QPainter, QColor, QMouseEvent
+from PyQt5.QtGui import QDesktopServices, QPainter, QColor, QMouseEvent, QImage, QPixmap
 
 class MainWindow(QWidget):
     def __init__(self):
@@ -25,6 +29,13 @@ class MainWindow(QWidget):
         # 窗体大小
         self.window_width = 605
         self.window_height = 275
+
+        img_data = b64decode(base_code)
+        image = Image.open(BytesIO(img_data))
+        qimage = self.convert_image_to_qimage(image)
+        label = QLabel(self)
+        label.setPixmap(QPixmap.fromImage(qimage))
+        label.setGeometry(20, 10, self.window_width, self.window_height)
 
         # 设置窗口透明度
         self.setWindowOpacity(0.8)
@@ -93,9 +104,22 @@ class MainWindow(QWidget):
             鼠标移开，窗口会被吸入屏幕侧边收起窗体，留窗体边缘
             若有闪烁即有新消息，把鼠标移到窗体边缘，窗体会再次展开
             点击标题，会用默认浏览器打开该公文通超链接
+            每20分钟获取一次公文通
+            请关闭梯子使用
+            高缩放的Windows桌面会有显示不全
             右键窗体边缘可以退出程序          ----made by Mick4994
         """
         QMessageBox.information(self, '使用须知', self.how_to_use, QMessageBox.Yes, QMessageBox.Yes)
+
+    def convert_image_to_qimage(self, image):
+        # 获取图像属性
+        width, height = image.size
+        format = QImage.Format_RGB888 if image.mode == "RGB" else QImage.Format_RGBA8888
+
+        # 将 Image 对象转换成 QImage 对象
+        qimage = QImage(image.tobytes(), width, height, format)
+        
+        return qimage
 
     def populate_table(self):
         """
