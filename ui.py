@@ -1,5 +1,6 @@
 from bcode import base_code
 from base64 import b64decode
+from config import *
 from PIL import Image
 from io import BytesIO
 from PyQt5.QtWidgets import QApplication, QWidget, QTableWidget, QTableWidgetItem, QHeaderView, QMenu, QMessageBox, QLabel
@@ -28,7 +29,7 @@ class MainWindow(QWidget):
 
         # 窗体大小
         self.window_width = 605
-        self.window_height = 275
+        self.window_height = 275 + 20
 
         img_data = b64decode(base_code)
         image = Image.open(BytesIO(img_data))
@@ -56,7 +57,7 @@ class MainWindow(QWidget):
         self.table_widget.setGeometry(10, 10, self.window_width - 20, self.window_height - 20)
 
         # 设置表格行列数
-        self.table_widget.setRowCount(10)
+        self.table_widget.setRowCount(MAX_ROW)
         self.table_widget.setColumnCount(2)
 
         # 设置表格头部标签
@@ -126,7 +127,10 @@ class MainWindow(QWidget):
         按消息列表在ui中的表逐个按行填充，第一列为来源的办公室，第二列为消息标题超链接
         """
 
-        for index, row in zip(range(10), self.message_list):
+        # if self.message_list:
+        #     QMessageBox.information(self, '公文通更新啦!', f'{self.message_list[0][1]}', QMessageBox.Yes, QMessageBox.Yes)
+
+        for index, row in zip(range(MAX_ROW), self.message_list):
 
             # 设置每行高度
             self.table_widget.setRowHeight(index, 20)

@@ -1,0 +1,19 @@
+# 更新间隔
+UPDATE_INTERVAL= 5
+# 不要太快
+if UPDATE_INTERVAL < 5:
+    UPDATE_INTERVAL = 5
+
+# 显示行数
+MAX_ROW = 11
+
+# 最大20行
+if MAX_ROW > 20:
+    MAX_ROW = 20
+
+
+# 更新提示闪烁频率
+FLICKER_FREQUENCY = 0.1
+# 不要太快
+if FLICKER_FREQUENCY < 0.02:
+    FLICKER_FREQUENCY = 0.02

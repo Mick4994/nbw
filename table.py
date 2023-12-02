@@ -1,3 +1,4 @@
+from config import *
 from sys import exit, argv
 from threading import Thread
 from time import sleep
@@ -7,17 +8,27 @@ from soup import get_nbw_message
 
 def update_table(window: MainWindow):
 
-    # 首次获取信息
-    window.message_list = get_nbw_message()
+    # 首次获取信息，若没第一时间获取到则循环获取
+    while True:
+        window.message_list = get_nbw_message()
+        if window.message_list:
+            break
+        sleep(UPDATE_INTERVAL)
+
+    # 正确获取到信息，UI进行更新
     window.have_update = True
     window.populate_table()
     window.update()
 
     while True:
         
-        # 等待20分钟后获取公文通信息
-        sleep(1200)
+        # 等待<UPDATE_INTERVAL>后获取公文通信息
+        sleep(UPDATE_INTERVAL)
+
         window.next_msg_list = get_nbw_message()
+
+        if not window.next_msg_list:
+            continue
 
         # 如果没更新则继续等待
         if window.next_msg_list[0][1] == window.message_list[0][1]:
@@ -30,13 +41,13 @@ def update_table(window: MainWindow):
 
 def notice(window: MainWindow):
     while True:
-        sleep(0.5)
+        sleep(FLICKER_FREQUENCY)
         if not window.have_update:
             continue
 
         window.border_color = window.notice_color
         window.update()
-        sleep(0.5)
+        sleep(FLICKER_FREQUENCY)
         window.border_color = window.normal_color
         window.update()
 
